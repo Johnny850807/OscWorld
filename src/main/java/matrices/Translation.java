@@ -7,6 +7,18 @@ import org.apache.commons.math3.linear.RealMatrix;
  * @author - johnny850807@gmail.com (Waterball)
  */
 public class Translation extends Transformation {
+    public static Translation alongX(double offsetX) {
+        return new Translation(offsetX, 0, 0);
+    }
+
+    public static Translation alongY(double offsetY) {
+        return new Translation(0, offsetY, 0);
+    }
+
+    public static Translation alongZ(double offsetZ) {
+        return new Translation(0, 0, offsetZ);
+    }
+
     public Translation(double offsetX, double offsetY, double offsetZ) {
         super(translationMatrix(offsetX, offsetY, offsetZ));
     }

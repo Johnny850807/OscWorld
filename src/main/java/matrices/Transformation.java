@@ -1,5 +1,7 @@
 package matrices;
 
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.TypeHost;
+import org.apache.commons.math3.analysis.function.Inverse;
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 import world.Vector3;
@@ -50,7 +52,12 @@ public class Transformation {
         return new Transformation(matrix.multiply(transformation.getMatrix()));
     }
 
+    public Transformation inverse() {
+        return new Transformation(MatrixUtils.inverse(matrix));
+    }
+
     public RealMatrix getMatrix() {
         return matrix;
     }
+
 }
