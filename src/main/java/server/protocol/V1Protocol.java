@@ -2,10 +2,9 @@ package server.protocol;
 
 import world.Bird;
 import world.Sprite;
+import world.Vector3;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 
@@ -14,7 +13,7 @@ import java.util.Collection;
  */
 public class V1Protocol implements Protocol {
     @Override
-    public byte[] packInitializedSprites(Collection<Sprite> sprites) {
+    public void writeInitializedSprites(OutputStream out, Collection<Sprite> sprites) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         // generate content
@@ -32,20 +31,13 @@ public class V1Protocol implements Protocol {
 
         // protocol
         try {
-            baos.write(-100);  // OpCode
-            writeInt(baos, contentBytes.length);
-            baos.write(contentBytes);
-        } catch (IOException ignored) { }
-
-        return baos.toByteArray();
+            out.write(-100);  // OpCode
+            writeInt(out, contentBytes.length);
+            out.write(contentBytes);
+        } catch (IOException ignored) {
+        }
     }
 
-    private void writeInt(OutputStream out, int v) throws IOException {
-        out.write((v >>> 24) & 0xFF);
-        out.write((v >>> 16) & 0xFF);
-        out.write((v >>> 8) & 0xFF);
-        out.write((v & 0xFF));
-    }
 
     @Override
     public int getAnimalTypeCode(Sprite sprite) {
@@ -56,7 +48,40 @@ public class V1Protocol implements Protocol {
     }
 
     @Override
-    public UpdateLocationRequest parseUpdateLocationRequest(byte[] packet) {
-        return null;
+    public UpdateLocationRequest parseUpdateLocationRequest(InputStream in) throws IOException {
+        byte opCode = (byte) in.read();
+        assert opCode == -101 : "OpCode mismatch";
+
+        int contentLength = readInt(in);
+        byte[] contentBytes = new byte[contentLength];
+        assert in.read(contentBytes) == contentLength;
+
+        String content = new String(contentBytes, StandardCharsets.US_ASCII);
+        String[] split = content.split(",");
+
+        return new UpdateLocationRequest(
+                new Vector3(Double.parseDouble(split[0]),
+                        Double.parseDouble(split[1]),
+                        Double.parseDouble(split[2])),
+                Double.parseDouble(split[3]));
     }
+
+
+    private static void writeInt(OutputStream out, int v) throws IOException {
+        out.write((v >>> 24) & 0xFF);
+        out.write((v >>> 16) & 0xFF);
+        out.write((v >>> 8) & 0xFF);
+        out.write((v & 0xFF));
+    }
+
+    private static int readInt(InputStream in) throws IOException {
+        int ch1 = in.read();
+        int ch2 = in.read();
+        int ch3 = in.read();
+        int ch4 = in.read();
+        if ((ch1 | ch2 | ch3 | ch4) < 0)
+            throw new EOFException();
+        return ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4));
+    }
+
 }

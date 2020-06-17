@@ -1,12 +1,19 @@
 package world;
 
 public class Player extends Sprite {
-	private int angle;
+	private double angle;
 
-	private World world;
 
 	@Override
 	public void update() {
 
+	}
+
+	public void setAngle(double angle) {
+		this.angle = angle;
+	}
+
+	public double getAngle() {
+		return angle;
 	}
 }

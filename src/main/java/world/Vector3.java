@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * @author - johnny850807@gmail.com (Waterball)
  */
-public class Vector3 {
+public class Vector3 implements Cloneable {
     public double x;
     public double y;
     public double z;
@@ -38,5 +38,13 @@ public class Vector3 {
     @Override
     public int hashCode() {
         return Objects.hash(x, y, z);
+    }
+
+    public Vector3 clone() {
+        try {
+            return (Vector3) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Unreachable", e);
+        }
     }
 }

@@ -1,7 +1,11 @@
 package server.protocol;
 
 import world.Sprite;
+import world.Vector3;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collection;
 
 /**
@@ -9,20 +13,18 @@ import java.util.Collection;
  */
 public interface Protocol {
 
-    byte[] packInitializedSprites(Collection<Sprite> sprites);
+    void writeInitializedSprites(OutputStream out, Collection<Sprite> sprites) throws IOException;
 
     int getAnimalTypeCode(Sprite sprite);
 
-    UpdateLocationRequest parseUpdateLocationRequest(byte[] packet);
+    UpdateLocationRequest parseUpdateLocationRequest(InputStream in) throws IOException;
 
     class UpdateLocationRequest {
-        public double x, y, z;
-        public int angle;
+        public Vector3 point;
+        public double angle;
 
-        public UpdateLocationRequest(double x, double y, double z, int angle) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
+        public UpdateLocationRequest(Vector3 point, double angle) {
+            this.point = point;
             this.angle = angle;
         }
     }
