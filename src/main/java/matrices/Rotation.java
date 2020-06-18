@@ -9,6 +9,7 @@ import static java.lang.Math.sin;
 /**
  * @author - johnny850807@gmail.com (Waterball)
  */
+// @formatter:off
 public class Rotation extends Transformation {
     public static Rotation xAxis(double angle) {
         double[][] mat = {
@@ -44,3 +45,4 @@ public class Rotation extends Transformation {
         super(matrix);
     }
 }
+// @formatter:on

@@ -32,4 +32,4 @@ build/
 
 
 # log
-simulate-communication-overhead
+benchmark.log

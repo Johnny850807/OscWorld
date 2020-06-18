@@ -1,11 +1,13 @@
 package world;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 public class World {
     // a set of sprites excluding the player
-    private Collection<Sprite> sprites = new HashSet<>();
+    private List<Sprite> sprites = new ArrayList<>();
     private Player player = new Player();
 
     public World() {
@@ -21,7 +23,7 @@ public class World {
         player.setAngle(angle);
     }
 
-    public Collection<Sprite> getSprites() {
+    public List<Sprite> getSprites() {
         return sprites;
     }
 

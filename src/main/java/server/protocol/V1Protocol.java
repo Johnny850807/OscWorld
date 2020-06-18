@@ -1,11 +1,15 @@
 package server.protocol;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import world.Bird;
 import world.Sprite;
 import world.Vector3;
 
-import java.io.*;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 
@@ -13,6 +17,8 @@ import java.util.Collection;
  * @author - johnny850807@gmail.com (Waterball)
  */
 public class V1Protocol implements Protocol {
+    private static Logger logger = LogManager.getLogger(V1Protocol.class);
+
     @Override
     public void writeInitializedSprites(OutputStream out, Collection<Sprite> sprites) throws IOException {
         // generate content
@@ -24,11 +30,13 @@ public class V1Protocol implements Protocol {
                     .append(sprite.getPoint().z).append("\n");
         }
         // delete the final '\n' break-line
-        stringBuilder.delete(stringBuilder.length()-1, stringBuilder.length());
+        stringBuilder.delete(stringBuilder.length() - 1, stringBuilder.length());
 
         // pack content into bytes
         String content = stringBuilder.toString();
         byte[] contentBytes = content.getBytes(StandardCharsets.US_ASCII);
+
+        logger.debug("[InitializedSprites: write] content-length: {}, raw: {}", contentBytes.length, content);
 
         // protocol
         try {
@@ -51,13 +59,15 @@ public class V1Protocol implements Protocol {
     @Override
     public UpdateLocationRequest parseUpdateLocationRequest(InputStream in) throws IOException {
         byte opCode = (byte) in.read();
-        assert opCode == (byte)0x9B : "OpCode mismatch";
+        assert opCode == (byte) 0x9B : "OpCode mismatch";
 
         int contentLength = readInt(in);
         byte[] contentBytes = new byte[contentLength];
         assert in.read(contentBytes) == contentLength;
 
         String content = new String(contentBytes, StandardCharsets.US_ASCII);
+        logger.debug("[UpdateLocationRequest: read] content-length: {}, raw: {}", contentBytes.length, content);
+
         String[] split = content.split(",");
 
         return new UpdateLocationRequest(

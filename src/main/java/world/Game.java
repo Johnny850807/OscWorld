@@ -1,6 +1,7 @@
 package world;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 
 public class Game {
@@ -16,7 +17,7 @@ public class Game {
                 AISprite aISprite = types[random.nextInt(types.length)].newInstance();
                 double min = -100, max = 100;
                 aISprite.setPoint(new Vector3(
-                                Math.random() * ((max - min) + 1) + min,
+                        Math.random() * ((max - min) + 1) + min,
                         Math.random() * ((max - min) + 1) + min,
                         Math.random() * ((max - min) + 1) + min));
                 world.addSprite(aISprite);
@@ -26,7 +27,7 @@ public class Game {
         }
     }
 
-    public Collection<Sprite> getSprites() {
+    public List<Sprite> getSprites() {
         return world.getSprites();
     }
 

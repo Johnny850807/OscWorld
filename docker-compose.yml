@@ -1,0 +1,8 @@
+version: '2.0'
+services:
+  osc-server:
+    build: .
+    volumes:
+      - ./logs:/logs
+    ports:
+      - 40000:40000
