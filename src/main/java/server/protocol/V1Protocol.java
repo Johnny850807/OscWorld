@@ -63,12 +63,14 @@ public class V1Protocol implements Protocol {
 
         int contentLength = readInt(in);
         byte[] contentBytes = new byte[contentLength];
-        assert in.read(contentBytes) == contentLength;
+        for (int i = 0; i < contentLength; i++) {
+            contentBytes[i] = (byte) in.read();
+        }
 
         String content = new String(contentBytes, StandardCharsets.US_ASCII);
-        logger.debug("[UpdateLocationRequest: read] content-length: {}, raw: {}", contentBytes.length, content);
-
         String[] split = content.split(",");
+
+        logger.debug("[UpdateLocationRequest: read] content-length: {}, raw: {}", contentBytes.length, content);
 
         return new UpdateLocationRequest(
                 new Vector3(Double.parseDouble(split[0]),
