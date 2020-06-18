@@ -1,21 +1,24 @@
 package server;
 
+import matrices.Rotation;
+import matrices.Transformation;
+import matrices.Translation;
 import server.protocol.Protocol;
 import server.protocol.Protocol.UpdateLocationRequest;
-import world.Game;
-import world.Player;
-import world.Vector3;
-import world.World;
+import world.*;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Server {
     private final int PORT = 40000;
     private final Protocol protocol;
+    private OscAdapter oscAdapter;
     private TransformationProcessing transformationProcessing;
     private ServerSocket serverSocket;
     private Socket client;
@@ -23,8 +26,9 @@ public class Server {
     private InputStream in;
     private Game game;
 
-    public Server(Protocol protocol) {
+    public Server(Protocol protocol, OscAdapter oscAdapter) {
         this.protocol = protocol;
+        this.oscAdapter = oscAdapter;
     }
 
     public void start() throws IOException {
@@ -43,7 +47,7 @@ public class Server {
 
     private void initializeGame() {
         game = new Game();
-        game.initializeAndStart();
+        game.initializeAndStart(20);
         try {
             protocol.writeInitializedSprites(bufferedOut, game.getSprites());
             bufferedOut.flush();
@@ -55,13 +59,14 @@ public class Server {
 
     private void listeningToClientUpdates() {
         new Thread(() -> {
-            try {
-                UpdateLocationRequest update = protocol.parseUpdateLocationRequest(in);
-                World world = game.getWorld();
-                world.updatePlayerLocation(update.point, update.angle);
-
-            } catch (IOException e) {
-                e.printStackTrace();
+            while (!serverSocket.isClosed()) {
+                try {
+                    UpdateLocationRequest update = protocol.parseUpdateLocationRequest(in);
+                    World world = game.getWorld();
+                    world.updatePlayerLocation(update.point, update.angle);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }).start();
     }
@@ -79,12 +84,19 @@ public class Server {
                     Thread.sleep(500);
                     Player p = game.getWorld().getPlayer();
 
-                    // only refresh when the player states actually updated
-                    if (!p.getPoint().equals(latestPoint) || p.getAngle() != latestAngle) {
-                        latestPoint = p.getPoint();
-                        latestAngle = p.getAngle();
-                    }
+                    latestPoint = p.getPoint();
+                    latestAngle = p.getAngle();
 
+                    Transformation transformation =
+                            new Translation(-latestPoint.x, -latestPoint.y, -latestPoint.z)
+                                    .compose(Rotation.zAxis(latestAngle))
+                                    .compose(new Translation(latestPoint.x, latestPoint.y, latestPoint.z));
+
+                    List<Vector3> newVectors = transformation.transform(
+                            game.getSprites().stream()
+                                    .map(Sprite::getPoint).collect(Collectors.toList()));
+
+                    oscAdapter.updateTrack(newVectors);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

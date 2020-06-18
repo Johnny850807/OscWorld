@@ -1,5 +1,6 @@
 package server.protocol;
 
+import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 import world.Bird;
 import world.Sprite;
 import world.Vector3;
@@ -14,16 +15,16 @@ import java.util.Collection;
 public class V1Protocol implements Protocol {
     @Override
     public void writeInitializedSprites(OutputStream out, Collection<Sprite> sprites) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
         // generate content
         StringBuilder stringBuilder = new StringBuilder();
         for (Sprite sprite : sprites) {
             stringBuilder.append(getAnimalTypeCode(sprite)).append(",")
                     .append(sprite.getPoint().x).append(",")
                     .append(sprite.getPoint().y).append(",")
-                    .append(sprite.getPoint().z);
+                    .append(sprite.getPoint().z).append("\n");
         }
+        // delete the final '\n' break-line
+        stringBuilder.delete(stringBuilder.length()-1, stringBuilder.length());
 
         // pack content into bytes
         String content = stringBuilder.toString();
@@ -31,7 +32,7 @@ public class V1Protocol implements Protocol {
 
         // protocol
         try {
-            out.write(-100);  // OpCode
+            out.write(0x9C);  // OpCode
             writeInt(out, contentBytes.length);
             out.write(contentBytes);
         } catch (IOException ignored) {
@@ -50,7 +51,7 @@ public class V1Protocol implements Protocol {
     @Override
     public UpdateLocationRequest parseUpdateLocationRequest(InputStream in) throws IOException {
         byte opCode = (byte) in.read();
-        assert opCode == -101 : "OpCode mismatch";
+        assert opCode == (byte)0x9B : "OpCode mismatch";
 
         int contentLength = readInt(in);
         byte[] contentBytes = new byte[contentLength];
@@ -65,7 +66,6 @@ public class V1Protocol implements Protocol {
                         Double.parseDouble(split[2])),
                 Double.parseDouble(split[3]));
     }
-
 
     private static void writeInt(OutputStream out, int v) throws IOException {
         out.write((v >>> 24) & 0xFF);

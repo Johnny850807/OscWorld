@@ -1,6 +1,6 @@
 package world;
 
-public class SoundSource extends Sprite {
+public class AISprite extends Sprite {
     @Override
     public void update() {
 

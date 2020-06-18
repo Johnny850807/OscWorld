@@ -1,5 +1,9 @@
 package server;
 
-public interface OscAdapter {
+import world.Vector3;
 
+import java.util.List;
+
+public interface OscAdapter {
+    void updateTrack(List<Vector3> vectors);
 }
