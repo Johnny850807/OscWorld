@@ -1,9 +1,9 @@
 package server;
 
-import world.Vector3;
+import world.SoundSprite;
 
 import java.util.List;
 
 public interface OscAdapter {
-    void updateTrack(List<Vector3> vectors);
+    void updateSoundTrack(List<? extends SoundSprite> soundSprites);
 }

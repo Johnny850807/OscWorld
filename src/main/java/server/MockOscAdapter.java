@@ -1,6 +1,6 @@
 package server;
 
-import world.Vector3;
+import world.SoundSprite;
 
 import java.util.List;
 
@@ -9,9 +9,7 @@ import java.util.List;
  */
 public class MockOscAdapter implements OscAdapter {
     @Override
-    public void updateTrack(List<Vector3> vectors) {
-        //System.out.println("=== Update Track (Start) ===");
-        //vectors.forEach(System.out::println);
-        //System.out.println("=== Update Track (End) ===");
+    public void updateSoundTrack(List<? extends SoundSprite> soundSprites) {
+
     }
 }
