@@ -1,0 +1,9 @@
+FROM maven:3.6.3-jdk-8
+
+RUN mkdir -p /usr/src/app
+RUN mkdir -p /usr/src/app/target
+
+WORKDIR /usr/src/app
+
+CMD mvn package -DskipTests
+
