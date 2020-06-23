@@ -17,7 +17,21 @@ public interface Protocol {
 
     int getAnimalTypeCode(Sprite sprite);
 
-    UpdateLocationRequest parseUpdateLocationRequest(InputStream in) throws IOException;
+    void handleNextRequest(InputStream in, RequestHandler requestHandler) throws IOException;
+
+    interface RequestHandler {
+        void onUpdateLocationRequest(UpdateLocationRequest updateLocationRequest);
+        void onPlaySoundRequest(PlaySoundRequest playSoundRequest);
+        void onStartGameRequest();
+        void onGameOverRequest();
+    }
+
+    class PlaySoundRequest {
+        public int soundId;
+        public PlaySoundRequest(int soundId) {
+            this.soundId = soundId;
+        }
+    }
 
     class UpdateLocationRequest {
         public Vector3 point;

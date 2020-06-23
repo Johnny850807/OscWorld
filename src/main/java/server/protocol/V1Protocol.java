@@ -18,6 +18,67 @@ import java.util.Collection;
  */
 public class V1Protocol implements Protocol {
     private static Logger logger = LogManager.getLogger(V1Protocol.class);
+    private final static byte START_GAME_OPCODE = (byte) 0x9D;
+    private final static byte UPDATE_LOCATION_OPCODE = (byte) 0x9B;
+    private final static byte PLAY_SOUND_OPCODE = (byte) 0x9C;
+    private final static byte GAME_OVER_OPCODE = (byte) 0x9E;
+
+    @Override
+    public int getAnimalTypeCode(Sprite sprite) {
+        if (sprite instanceof Bird) {
+            return 1;
+        }
+        throw new IllegalArgumentException("Animal Type not exists for the class " + sprite.getClass() + ".");
+    }
+
+    @Override
+    public void handleNextRequest(InputStream in, RequestHandler requestHandler) throws IOException {
+        byte opCode = (byte) in.read();
+        switch (opCode) {
+            case UPDATE_LOCATION_OPCODE:
+                handleUpdateLocationRequest(in, requestHandler);
+                break;
+            case PLAY_SOUND_OPCODE:
+                handlePlaySoundRequest(in, requestHandler);
+                break;
+            case START_GAME_OPCODE:
+                logger.debug("[StartGameRequest]");
+                requestHandler.onStartGameRequest();
+                break;
+            case GAME_OVER_OPCODE:
+                logger.debug("[GameOverRequest]");
+                requestHandler.onGameOverRequest();
+                break;
+            default:
+                throw new IllegalStateException("Illegal opCode " + opCode);
+        }
+    }
+
+    private void handleUpdateLocationRequest(InputStream in, RequestHandler requestHandler) throws IOException {
+        int contentLength = readInt(in);
+        byte[] contentBytes = new byte[contentLength];
+        for (int i = 0; i < contentLength; i++) {
+            contentBytes[i] = (byte) in.read();
+        }
+
+        String content = new String(contentBytes, StandardCharsets.US_ASCII);
+        String[] split = content.split(",");
+
+        logger.debug("[UpdateLocationRequest: read] content-length: {}, raw: {}", contentBytes.length, content);
+
+        requestHandler.onUpdateLocationRequest(new UpdateLocationRequest(
+                new Vector3(Double.parseDouble(split[0]),
+                        Double.parseDouble(split[1]),
+                        Double.parseDouble(split[2])),
+                Double.parseDouble(split[3])));
+    }
+
+    private void handlePlaySoundRequest(InputStream in, RequestHandler requestHandler) throws IOException {
+        int soundId = readInt(in);
+        logger.debug("[PlaySoundRequest: read] soundId: {}", soundId);
+        requestHandler.onPlaySoundRequest(new PlaySoundRequest(soundId));
+    }
+
 
     @Override
     public void writeInitializedSprites(OutputStream out, Collection<Sprite> sprites) throws IOException {
@@ -40,43 +101,11 @@ public class V1Protocol implements Protocol {
 
         // protocol
         try {
-            out.write(0x9C);  // OpCode
+            out.write(START_GAME_OPCODE);  // OpCode
             writeInt(out, contentBytes.length);
             out.write(contentBytes);
         } catch (IOException ignored) {
         }
-    }
-
-
-    @Override
-    public int getAnimalTypeCode(Sprite sprite) {
-        if (sprite instanceof Bird) {
-            return 1;
-        }
-        throw new IllegalArgumentException("Animal Type not exists for the class " + sprite.getClass() + ".");
-    }
-
-    @Override
-    public UpdateLocationRequest parseUpdateLocationRequest(InputStream in) throws IOException {
-        byte opCode = (byte) in.read();
-        assert opCode == (byte) 0x9B : "OpCode mismatch";
-
-        int contentLength = readInt(in);
-        byte[] contentBytes = new byte[contentLength];
-        for (int i = 0; i < contentLength; i++) {
-            contentBytes[i] = (byte) in.read();
-        }
-
-        String content = new String(contentBytes, StandardCharsets.US_ASCII);
-        String[] split = content.split(",");
-
-        logger.debug("[UpdateLocationRequest: read] content-length: {}, raw: {}", contentBytes.length, content);
-
-        return new UpdateLocationRequest(
-                new Vector3(Double.parseDouble(split[0]),
-                        Double.parseDouble(split[1]),
-                        Double.parseDouble(split[2])),
-                Double.parseDouble(split[3]));
     }
 
     private static void writeInt(OutputStream out, int v) throws IOException {

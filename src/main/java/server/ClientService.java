@@ -20,7 +20,7 @@ import java.util.stream.IntStream;
 /**
  * @author - johnny850807@gmail.com (Waterball)
  */
-public class ClientService extends Thread {
+public class ClientService extends Thread implements Protocol.RequestHandler {
     private Logger logger = LogManager.getLogger();  //TODO use an effective name (i.e. clearly differentiate the client)
 
     private Protocol protocol;
@@ -45,15 +45,32 @@ public class ClientService extends Thread {
         try {
             bufferedOut = new BufferedOutputStream(client.getOutputStream());
             in = client.getInputStream();
-
-            logger.info("Client connected, initializing game...");
-            worldSimulationProcessing = new WorldSimulationProcessing();
-            worldSimulationProcessing.start();
-            initializeGame();
             listenToClientUpdates();
         } catch (IOException err) {
             logger.error(err);
         }
+    }
+
+    private void listenToClientUpdates() {
+        clientUpdatesListenerThread = new Thread(() -> {
+            try {
+                while (!client.isClosed()) {
+                    protocol.handleNextRequest(in, this);
+                }
+            } catch (IOException e) {
+                logger.fatal("Stop listening to the client.");
+                cleanUpGame();
+            }
+        });
+        clientUpdatesListenerThread.start();
+    }
+
+    @Override
+    public void onStartGameRequest() {
+        logger.info("Client connected, initializing game...");
+        worldSimulationProcessing = new WorldSimulationProcessing();
+        worldSimulationProcessing.start();
+        initializeGame();
     }
 
     private void initializeGame() {
@@ -68,32 +85,37 @@ public class ClientService extends Thread {
         }
     }
 
-    private void listenToClientUpdates() {
-        clientUpdatesListenerThread = new Thread(() -> {
-            try {
-                while (!client.isClosed()) {
-                    UpdateLocationRequest update = protocol.parseUpdateLocationRequest(in);
-                    logger.info("New UpdateLocationRequest received and deserialized.");
-                    World world = game.getWorld();
-                    world.updatePlayerLocation(update.point, update.angle);
-                }
-                logger.fatal("Stop listening to the client.");
-                clearUpClientService();
-            } catch (IOException e) {
-                logger.error(e);
-            }
-        });
-        clientUpdatesListenerThread.start();
+    @Override
+    public void onGameOverRequest() {
+        cleanUpGame();
     }
 
-    private void clearUpClientService() {
-        logger.traceEntry("Clearing up the client service.");
+    private void cleanUpGame() {
+        logger.traceEntry("Stopping...");
+        try {
+            if (worldSimulationProcessing != null) {
+                worldSimulationProcessing.interrupt();
+                worldSimulationProcessing.join();
+                worldSimulationProcessing = null;
+            }
+        } catch (InterruptedException ignored) { }
+        oscAdapter.clearAll();
         game = null;
-        worldSimulationProcessing.interrupt();
-        worldSimulationProcessing = null;
-        clientUpdatesListenerThread.interrupt();
-        clientUpdatesListenerThread = null;
-        logger.traceExit("Cleared up the client service.");
+
+        logger.traceExit("Stopped.");
+    }
+
+    @Override
+    public void onUpdateLocationRequest(UpdateLocationRequest updateLocationRequest) {
+        logger.info("UpdateLocationRequest");
+        World world = game.getWorld();
+        world.updatePlayerLocation(updateLocationRequest.point, updateLocationRequest.angle);
+    }
+
+    @Override
+    public void onPlaySoundRequest(Protocol.PlaySoundRequest playSoundRequest) {
+        logger.info("PlaySoundRequest");
+        oscAdapter.playSound(playSoundRequest.soundId);
     }
 
     private class WorldSimulationProcessing extends Thread {
@@ -104,8 +126,8 @@ public class ClientService extends Thread {
 
         @Override
         public void run() {
-            while (!client.isClosed()) {
-                try {
+            try {
+                while (!client.isClosed()) {
                     Thread.sleep(500);
                     Player p = game.getWorld().getPlayer();
 
@@ -121,10 +143,8 @@ public class ClientService extends Thread {
 
                     latestPoint = p.getPoint();
                     latestAngle = p.getAngle();
-                } catch (InterruptedException e) {
-                    logger.error(e);
                 }
-            }
+            } catch (InterruptedException ignored) { }
             logger.fatal("Stop running.");
         }
 
