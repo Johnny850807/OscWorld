@@ -9,17 +9,11 @@ import java.util.List;
  */
 public class MockOscAdapter implements OscAdapter {
     @Override
-    public void updateSoundTrack(List<? extends SoundSprite> soundSprites) {
-
-    }
+    public void updateSoundTrack(List<? extends SoundSprite> soundSprites) { }
 
     @Override
-    public void playSound(int soundId) {
-
-    }
+    public void playSound(int soundId) { }
 
     @Override
-    public void clearAll() {
-
-    }
+    public void clearAll() { }
 }

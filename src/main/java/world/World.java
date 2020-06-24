@@ -18,6 +18,10 @@ public class World {
         sprites.add(sprite);
     }
 
+    public void translatePlayerLocation(double x, double y) {
+        player.getPoint().translate(x, y);
+    }
+
     public void updatePlayerLocation(Vector3 point, double angle) {
         player.setPoint(point);
         player.setAngle(angle);

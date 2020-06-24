@@ -2,7 +2,7 @@ package world;
 
 public class Sprite implements Cloneable {
     private int typeId;
-    private Vector3 point;
+    private Vector3 point = new Vector3(0, 0, 0);
     private Behavior behavior = (sprite)->{/*do nothing*/};
 
     public Sprite(int typeId) {

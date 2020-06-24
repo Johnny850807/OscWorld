@@ -9,7 +9,7 @@ import java.util.Map;
 public class SoundSprites {
     private final static double DEFAULT_VOLUME = 0.4;
 
-    interface Types {
+    public interface Types {
         int BIRD = 1;
 
         static int[] getAll() {
@@ -17,9 +17,13 @@ public class SoundSprites {
         }
     }
 
-    interface SoundIDs {
+    public interface SoundIDs {
         int BIRD = 1;
+        static int[] getAll() {
+            return new int[]{BIRD};
+        }
     }
+
     private static final Map<Integer, Sprite> spriteMap = new HashMap<>();
 
     static {
@@ -28,6 +32,5 @@ public class SoundSprites {
 
     public static Sprite createSprite(int typeId) {
         return spriteMap.get(typeId).clone();
-
     }
 }

@@ -16,6 +16,11 @@ public class Vector3 implements Cloneable {
         this.z = z;
     }
 
+    public void translate(double x, double y) {
+        this.x += x;
+        this.y += y;
+    }
+
     @Override
     public String toString() {
         return "world.Vector3{" +
