@@ -150,9 +150,9 @@ public class ClientService extends Thread implements Protocol.RequestHandler {
 
         private List<Vector3> viewTransform(Vector3 newPlayerPoint, double newAngle) {
             Transformation transformation =
-                    new Translation(-newPlayerPoint.x, -newPlayerPoint.y, -newPlayerPoint.z)
-                            .compose(Rotation.zAxis(newAngle))
-                            .compose(new Translation(newPlayerPoint.x, newPlayerPoint.y, newPlayerPoint.z));
+                    new Translation(-newPlayerPoint.x, -newPlayerPoint.y, -newPlayerPoint.z);
+                            //.compose(Rotation.zAxis(newAngle))
+                            //.compose(new Translation(newPlayerPoint.x, newPlayerPoint.y, newPlayerPoint.z));
 
             return transformation.transform(
                     game.getSprites().stream()

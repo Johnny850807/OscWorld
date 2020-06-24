@@ -3,10 +3,8 @@ package world;
 public class Player extends Sprite {
     private double angle;
 
-
-    @Override
-    public void update() {
-
+    public Player() {
+        super(-1, s -> {});
     }
 
     public void setAngle(double angle) {

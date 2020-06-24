@@ -2,7 +2,7 @@ package server.protocol;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import world.Bird;
+import world.SoundSprites;
 import world.Sprite;
 import world.Vector3;
 
@@ -25,9 +25,6 @@ public class V1Protocol implements Protocol {
 
     @Override
     public int getAnimalTypeCode(Sprite sprite) {
-        if (sprite instanceof Bird) {
-            return 1;
-        }
         throw new IllegalArgumentException("Animal Type not exists for the class " + sprite.getClass() + ".");
     }
 
