@@ -10,12 +10,13 @@ import java.util.Random;
  */
 public class ProbablyVolumeWaveTriggerBehavior implements Sprite.Behavior {
     private Random random = new Random(new Random().nextLong());
-    private Sprite.Behavior delegate;
+    private WaveVolumeBehavior delegate;
     private double probability;
     private boolean triggering = false;
     private double startTriggerVolume;
 
-    public ProbablyVolumeWaveTriggerBehavior(double probability, Sprite.Behavior delegate) {
+    public ProbablyVolumeWaveTriggerBehavior(double probability,
+                                             WaveVolumeBehavior delegate) {
         this.delegate = delegate;
         this.probability = probability;
     }
@@ -35,6 +36,7 @@ public class ProbablyVolumeWaveTriggerBehavior implements Sprite.Behavior {
         } else if (random.nextInt(100) / 100.0 <= probability) {
             triggering = true;
             startTriggerVolume = soundSprite.getVolume();
+            delegate.startWave();
         }
     }
 
@@ -42,7 +44,7 @@ public class ProbablyVolumeWaveTriggerBehavior implements Sprite.Behavior {
     public ProbablyVolumeWaveTriggerBehavior clone() {
         try {
             ProbablyVolumeWaveTriggerBehavior clone = (ProbablyVolumeWaveTriggerBehavior) super.clone();
-            clone.delegate = this.delegate.clone();
+            clone.delegate = (WaveVolumeBehavior) this.delegate.clone();
             clone.random = new Random(new Random().nextLong());
             return clone;
         } catch (CloneNotSupportedException e) {

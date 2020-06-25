@@ -72,7 +72,7 @@ public class ClientService extends Thread implements Protocol.RequestHandler {
     private void initAndStartGame() {
         game = new Game();
         game.addUpdateListener(this::onGameLoopUpdate);
-        game.initialize(20);
+        game.initialize();
         try {
             protocol.writeInitializedSprites(bufferedOut, game.getSprites());
             bufferedOut.flush();

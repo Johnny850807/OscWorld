@@ -6,7 +6,7 @@ import world.Sprite;
 /**
  * @author - johnny850807@gmail.com (Waterball)
  */
-public class LinearVolumeBehavior extends VolumeBehavior {
+public class LinearVolumeBehavior extends VolumeBehavior implements WaveVolumeBehavior {
     private boolean increase = true;
     private double interval;
     private double floor;
@@ -49,4 +49,8 @@ public class LinearVolumeBehavior extends VolumeBehavior {
         }
     }
 
+    @Override
+    public void startWave() {
+        increase = true;
+    }
 }

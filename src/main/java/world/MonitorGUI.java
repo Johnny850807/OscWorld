@@ -1,5 +1,7 @@
 package world;
 
+import utils.MinMax;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -53,6 +55,7 @@ public class MonitorGUI extends JFrame implements KeyListener {
 
     private class Panel extends JPanel {
         private List<Sprite> viewSprites;
+
         public Panel() {
             setSize(MonitorGUI.this.getWidth(), MonitorGUI.this.getHeight());
         }
@@ -73,15 +76,17 @@ public class MonitorGUI extends JFrame implements KeyListener {
                 int size = sprite instanceof SoundSprite ?
                         (int) (((SoundSprite) sprite).getVolume() * 100) : 10;
                 g.setFont(new Font("Microsoft JhengHei", Font.BOLD, size));
-                g.drawString(SoundSprites.getName(sprite.getTypeId()),
-                        (int) sprite.getPoint().x, (int) sprite.getPoint().y);
+
+                int x = MinMax.minmax((int) sprite.getPoint().x, -45, 70, 0, 115);
+                int z = MinMax.minmax((int) sprite.getPoint().z, -40, 72, 0, 112);
+                g.drawString(SoundSprites.getName(sprite.getTypeId()), x*10, z*10);
             }
         }
     }
 
     public static void main(String[] args) {
         Game game = new Game();
-        game.initialize(20);
+        game.initialize();
         game.start();
         MonitorGUI monitorGUI = new MonitorGUI(game);
         monitorGUI.setVisible(true);

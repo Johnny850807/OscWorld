@@ -1,7 +1,8 @@
 package server;
 
-import com.illposed.osc.OSCMessage;
-import com.illposed.osc.OSCSerializeException;
+import com.illposed.osc.*;
+import com.illposed.osc.transport.udp.OSCPort;
+import com.illposed.osc.transport.udp.OSCPortIn;
 import com.illposed.osc.transport.udp.OSCPortOut;
 import world.SoundSprite;
 import world.SoundSprites;
@@ -40,7 +41,7 @@ public class OscAdapterImpl implements OscAdapter {
 
     @Override
     public void clearAll() {
-        for (int typeId : SoundSprites.Types.getAll()) {
+        for (int typeId : SoundSprites.Types.getAllAnimals()) {
             OSCMessage msg = new OSCMessage("/sounds/" + typeId, Arrays.asList(0, 0, 0, 0));
             send(msg);
         }
@@ -51,6 +52,34 @@ public class OscAdapterImpl implements OscAdapter {
             oscPortOut.send(message);
         } catch (IOException | OSCSerializeException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+//        new Thread(() -> {
+//            try {
+//                OSCPortIn in = new OSCPortIn(9000);
+//                in.run();
+//                in.addPacketListener(new OSCPacketListener() {
+//                    @Override
+//                    public void handlePacket(OSCPacketEvent oscPacketEvent) {
+//                        System.out.println(oscPacketEvent);
+//                    }
+//
+//                    @Override
+//                    public void handleBadData(OSCBadDataEvent oscBadDataEvent) {
+//
+//                    }
+//                });
+//                in.startListening();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }).start();
+        while(true) {
+            OscAdapterImpl oscAdapter = new OscAdapterImpl("192.168.1.108", 9000);
+            oscAdapter.send(new OSCMessage("/sounds/1",
+                    Arrays.asList(0.4, 0.1, 0.2, 0.3)));
         }
     }
 }

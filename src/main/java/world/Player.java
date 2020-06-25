@@ -1,10 +1,12 @@
 package world;
 
+import world.behaviors.NullBehavior;
+
 public class Player extends Sprite {
     private double angle;
 
     public Player() {
-        super(-1, s -> {});
+        super(-1, new NullBehavior());
     }
 
     public void setAngle(double angle) {

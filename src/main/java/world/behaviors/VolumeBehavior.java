@@ -30,6 +30,9 @@ public abstract class VolumeBehavior implements Sprite.Behavior {
 
     protected abstract double onNewVolume(double x, double oldVolume);
 
+    public void setX(double x) {
+        this.x = x;
+    }
 
     @Override
     public VolumeBehavior clone() {

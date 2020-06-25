@@ -1,10 +1,11 @@
 package world;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
+/**
+ * @author - johnny850807@gmail.com (Waterball)
+ */
 public class World {
     // a set of sprites excluding the player
     private List<Sprite> sprites = new ArrayList<>();
@@ -18,8 +19,8 @@ public class World {
         sprites.add(sprite);
     }
 
-    public void translatePlayerLocation(double x, double y) {
-        player.getPoint().translate(x, y);
+    public void translatePlayerLocation(double x, double z) {
+        player.getPoint().translate(x, z);
     }
 
     public void updatePlayerLocation(Vector3 point, double angle) {
