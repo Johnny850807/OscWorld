@@ -29,4 +29,14 @@ public abstract class VolumeBehavior implements Sprite.Behavior {
     }
 
     protected abstract double onNewVolume(double x, double oldVolume);
+
+
+    @Override
+    public VolumeBehavior clone() {
+        try {
+            return (VolumeBehavior) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

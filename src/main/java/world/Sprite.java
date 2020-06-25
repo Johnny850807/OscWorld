@@ -1,9 +1,11 @@
 package world;
 
+import world.behaviors.NullBehavior;
+
 public class Sprite implements Cloneable {
     private int typeId;
     private Vector3 point = new Vector3(0, 0, 0);
-    private Behavior behavior = (sprite)->{/*do nothing*/};
+    private Behavior behavior = new NullBehavior();
 
     public Sprite(int typeId) {
         this.typeId = typeId;
@@ -34,14 +36,15 @@ public class Sprite implements Cloneable {
         try {
             Sprite clone = (Sprite) super.clone();
             clone.point = this.point.clone();
+            clone.behavior = this.behavior.clone();
             return clone;
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
     }
 
-    @FunctionalInterface
-    public interface Behavior {
+    public interface Behavior extends Cloneable {
         void onUpdate(Sprite sprite);
+        Behavior clone();
     }
 }

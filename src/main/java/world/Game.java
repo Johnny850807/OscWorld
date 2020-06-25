@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 public class Game {
     private World world;
-    private ViewportProcessing viewportProcessing = new ViewportProcessing(this);
+    private ViewportTransformer viewportTransformer = new ViewportTransformer();
     private Collection<UpdateListener> updateListeners = Collections.synchronizedSet(new HashSet<>());
     private boolean running;
 
@@ -38,10 +38,10 @@ public class Game {
         new Thread(() -> {
             while (running) {
                 try {
-                    Thread.sleep(30);
-                    viewportProcessing.process();
+                    Thread.sleep(16);
+                    List<Sprite> viewSprites = viewportTransformer.transform(getSprites(), getPlayer());
                     getSprites().forEach(Sprite::update);
-                    updateListeners.forEach(UpdateListener::opUpdate);
+                    updateListeners.forEach(l -> l.opUpdate(viewSprites));
                 } catch (InterruptedException ignored) {}
             }
         }).start();
@@ -76,7 +76,7 @@ public class Game {
     }
 
     public interface UpdateListener {
-        void opUpdate();
+        void opUpdate(List<Sprite> viewSprites);
     }
 
 }

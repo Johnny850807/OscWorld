@@ -10,7 +10,7 @@ public class VolumeBehaviorDemo {
         final double PROBABILITY = 0.7;
         ProbablyUpdateBehavior behavior = new ProbablyUpdateBehavior(PROBABILITY,
                 new SinVolumeBehavior(1.7));
-        SoundSprite sprite = new SoundSprite(1, 0, 1, behavior);
+        SoundSprite sprite = new SoundSprite(1, 0, behavior);
 
         for (int i = 0; i < 10000; i++) {
             sprite.update();

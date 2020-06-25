@@ -25,7 +25,7 @@ public class OscAdapterImpl implements OscAdapter {
     public void updateSoundTrack(List<? extends SoundSprite> soundSprites) {
         for (SoundSprite soundSprite : soundSprites) {
             OSCMessage msg = new OSCMessage(
-                    "/sounds/" + soundSprite.getSoundId(),
+                    "/sounds/" + soundSprite.getTypeId(),
                     Arrays.asList(soundSprite.getVolume(),
                             soundSprite.getPoint().x, soundSprite.getPoint().y, soundSprite.getPoint().z));
 
@@ -40,8 +40,8 @@ public class OscAdapterImpl implements OscAdapter {
 
     @Override
     public void clearAll() {
-        for (int soundId : SoundSprites.SoundIDs.getAll()) {
-            OSCMessage msg = new OSCMessage("/sounds/" + soundId, Arrays.asList(0, 0, 0, 0));
+        for (int typeId : SoundSprites.Types.getAll()) {
+            OSCMessage msg = new OSCMessage("/sounds/" + typeId, Arrays.asList(0, 0, 0, 0));
             send(msg);
         }
     }

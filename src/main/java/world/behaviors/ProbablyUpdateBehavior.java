@@ -28,6 +28,18 @@ public class ProbablyUpdateBehavior implements Sprite.Behavior {
         }
     }
 
+    @Override
+    public ProbablyUpdateBehavior clone() {
+        try {
+            ProbablyUpdateBehavior clone = (ProbablyUpdateBehavior) super.clone();
+            clone.delegate = this.delegate.clone();
+            clone.random = new Random(System.currentTimeMillis());
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public double getOccurrenceRatio() {
         return (double) occurrence / updateCount;
     }

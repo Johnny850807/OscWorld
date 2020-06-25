@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.List;
 
 /**
  * @author - johnny850807@gmail.com (Waterball)
@@ -51,8 +52,14 @@ public class MonitorGUI extends JFrame implements KeyListener {
     }
 
     private class Panel extends JPanel {
+        private List<Sprite> viewSprites;
         public Panel() {
             setSize(MonitorGUI.this.getWidth(), MonitorGUI.this.getHeight());
+        }
+
+        public void repaint(List<Sprite> viewSprites) {
+            this.viewSprites = viewSprites;
+            this.repaint();
         }
 
         @Override
@@ -62,8 +69,11 @@ public class MonitorGUI extends JFrame implements KeyListener {
             g.fillRect(0, 0, MonitorGUI.this.getWidth(), MonitorGUI.this.getHeight());
 
             g.setColor(Color.WHITE);
-            for (Sprite sprite : game.getSprites()) {
-                g.drawString(String.valueOf(sprite.getTypeId()),
+            for (Sprite sprite : viewSprites) {
+                int size = sprite instanceof SoundSprite ?
+                        (int) (((SoundSprite) sprite).getVolume() * 100) : 10;
+                g.setFont(new Font("Microsoft JhengHei", Font.BOLD, size));
+                g.drawString(SoundSprites.getName(sprite.getTypeId()),
                         (int) sprite.getPoint().x, (int) sprite.getPoint().y);
             }
         }

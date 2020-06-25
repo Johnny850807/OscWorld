@@ -1,6 +1,7 @@
 package world.behaviors;
 
 import world.SoundSprite;
+import world.Sprite;
 
 /**
  * @author - johnny850807@gmail.com (Waterball)
@@ -41,10 +42,11 @@ public class LinearVolumeBehavior extends VolumeBehavior {
     }
 
     public static void main(String[] args) {
-        SoundSprite sprite = new SoundSprite(1, 0.4, 1, new LinearVolumeBehavior(0.005));
+        SoundSprite sprite = new SoundSprite(1, 0.4, new LinearVolumeBehavior(0.005));
         for (int i = 0; i < 10000; i++) {
             sprite.update();
             System.out.println(sprite.getVolume());
         }
     }
+
 }

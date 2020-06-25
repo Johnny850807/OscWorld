@@ -8,19 +8,16 @@ import server.OscAdapter;
  */
 public class SoundSprite extends Sprite {
     private double volume = 1;  // 0~1
-    private int soundId;
     private OscAdapter oscAdapter = new MockOscAdapter();
 
-    public SoundSprite(int typeId, double volume, int soundId) {
+    public SoundSprite(int typeId, double volume) {
         super(typeId);
         this.volume = volume;
-        this.soundId = soundId;
     }
 
-    public SoundSprite(int typeId, double volume, int soundId, Behavior behavior) {
+    public SoundSprite(int typeId, double volume, Behavior behavior) {
         super(typeId, behavior);
         this.volume = volume;
-        this.soundId = soundId;
     }
 
     public void setOscAdapter(OscAdapter oscAdapter) {
@@ -35,7 +32,4 @@ public class SoundSprite extends Sprite {
         return volume;
     }
 
-    public int getSoundId() {
-        return soundId;
-    }
 }

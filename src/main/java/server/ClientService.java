@@ -6,12 +6,15 @@ import server.protocol.Protocol;
 import server.protocol.Protocol.UpdateLocationRequest;
 import world.Game;
 import world.SoundSprite;
+import world.Sprite;
 import world.World;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author - johnny850807@gmail.com (Waterball)
@@ -68,7 +71,7 @@ public class ClientService extends Thread implements Protocol.RequestHandler {
 
     private void initAndStartGame() {
         game = new Game();
-        game.addUpdateListener(() -> oscAdapter.updateSoundTrack(game.getSprites(SoundSprite.class)));
+        game.addUpdateListener(this::onGameLoopUpdate);
         game.initialize(20);
         try {
             protocol.writeInitializedSprites(bufferedOut, game.getSprites());
@@ -78,6 +81,12 @@ public class ClientService extends Thread implements Protocol.RequestHandler {
         } catch (IOException e) {
             logger.error(e);
         }
+    }
+
+    private void onGameLoopUpdate(List<Sprite> viewSprites) {
+        oscAdapter.updateSoundTrack(viewSprites.stream()
+                .filter(s -> s instanceof SoundSprite)
+                .map(s -> (SoundSprite) s).collect(Collectors.toList()));
     }
 
     @Override
