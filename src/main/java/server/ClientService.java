@@ -53,7 +53,12 @@ public class ClientService extends Thread implements Protocol.RequestHandler {
         clientUpdatesListenerThread = new Thread(() -> {
             try {
                 while (!client.isClosed()) {
-                    protocol.handleNextRequest(in, this);
+                    try {
+                        protocol.handleNextRequest(in, this);
+                    } catch (RuntimeException err) {
+                        err.printStackTrace();
+                    }
+
                 }
             } catch (IOException e) {
                 logger.fatal("Stop listening to the client.");

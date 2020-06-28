@@ -3,7 +3,6 @@ package server.protocol;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utils.ArrayUtils;
-import world.SoundSprite;
 import world.SoundSprites;
 import world.Sprite;
 import world.Vector3;
@@ -13,7 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Collection;
 
 /**
  * @author - johnny850807@gmail.com (Waterball)
@@ -32,24 +31,29 @@ public class V1Protocol implements Protocol {
 
     @Override
     public void handleNextRequest(InputStream in, RequestHandler requestHandler) throws IOException {
-        byte opCode = (byte) in.read();
-        switch (opCode) {
-            case UPDATE_LOCATION_OPCODE:
-                handleUpdateLocationRequest(in, requestHandler);
-                break;
-            case PLAY_SOUND_OPCODE:
-                handlePlaySoundRequest(in, requestHandler);
-                break;
-            case START_GAME_OPCODE:
-                logger.debug("[StartGameRequest]");
-                requestHandler.onStartGameRequest();
-                break;
-            case GAME_OVER_OPCODE:
-                logger.debug("[GameOverRequest]");
-                requestHandler.onGameOverRequest();
-                break;
-            default:
-                throw new IllegalStateException("Illegal opCode " + opCode);
+        int next = in.read();
+        if (next == -1) {
+            throw new IOException("EOF");
+        } else {
+            byte opCode = (byte) next;
+            switch (opCode) {
+                case UPDATE_LOCATION_OPCODE:
+                    handleUpdateLocationRequest(in, requestHandler);
+                    break;
+                case PLAY_SOUND_OPCODE:
+                    handlePlaySoundRequest(in, requestHandler);
+                    break;
+                case START_GAME_OPCODE:
+                    logger.debug("[StartGameRequest]");
+                    requestHandler.onStartGameRequest();
+                    break;
+                case GAME_OVER_OPCODE:
+                    logger.debug("[GameOverRequest]");
+                    requestHandler.onGameOverRequest();
+                    break;
+                default:
+                    throw new IllegalStateException("Illegal opCode " + opCode);
+            }
         }
     }
 
