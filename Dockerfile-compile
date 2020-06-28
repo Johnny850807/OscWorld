@@ -5,5 +5,5 @@ RUN mkdir -p /usr/src/app/target
 
 WORKDIR /usr/src/app
 
-CMD mvn package -DskipTests
+CMD mvn clean package -DskipTests
 
