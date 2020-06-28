@@ -2,6 +2,8 @@ package server.protocol;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import utils.ArrayUtils;
+import world.SoundSprite;
 import world.SoundSprites;
 import world.Sprite;
 import world.Vector3;
@@ -11,7 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * @author - johnny850807@gmail.com (Waterball)
@@ -81,11 +83,16 @@ public class V1Protocol implements Protocol {
     public void writeInitializedSprites(OutputStream out, Collection<Sprite> sprites) throws IOException {
         // generate content
         StringBuilder stringBuilder = new StringBuilder();
+        int[] animalTypes = SoundSprites.Types.getAllAnimals();
+
         for (Sprite sprite : sprites) {
-            stringBuilder.append(getAnimalTypeCode(sprite)).append(",")
-                    .append(sprite.getPoint().x).append(",")
-                    .append(sprite.getPoint().y).append(",")
-                    .append(sprite.getPoint().z).append("\n");
+            // only add animals in the current version
+            if (ArrayUtils.contains(animalTypes, sprite.getTypeId())) {
+                stringBuilder.append(getAnimalTypeCode(sprite)).append(",")
+                        .append(sprite.getPoint().x).append(",")
+                        .append(sprite.getPoint().y).append(",")
+                        .append(sprite.getPoint().z).append("\n");
+            }
         }
         // delete the final '\n' break-line
         stringBuilder.delete(stringBuilder.length() - 1, stringBuilder.length());

@@ -10,7 +10,8 @@ public class Player extends Sprite {
     }
 
     public void setAngle(double angle) {
-        this.angle = angle;
+        // todo ignore angle
+       // this.angle = angle;
     }
 
     public double getAngle() {

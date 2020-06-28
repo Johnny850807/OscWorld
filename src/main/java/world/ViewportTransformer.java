@@ -1,5 +1,6 @@
 package world;
 
+import matrices.Rotation;
 import matrices.Transformation;
 import matrices.Translation;
 import org.apache.logging.log4j.LogManager;
@@ -31,9 +32,8 @@ public class ViewportTransformer {
 
     private List<Vector3> viewTransform(List<Sprite> sprites, Vector3 newPlayerPoint, double newAngle) {
         Transformation transformation =
-                new Translation(-newPlayerPoint.x, -newPlayerPoint.y, -newPlayerPoint.z);
-        //.compose(Rotation.zAxis(newAngle))
-        //.compose(new Translation(newPlayerPoint.x, newPlayerPoint.y, newPlayerPoint.z));
+                Rotation.zAxis(newAngle)
+                        .compose(new Translation(-newPlayerPoint.x, -newPlayerPoint.y, -newPlayerPoint.z));
 
         List<Vector3> points = sprites.stream().map(Sprite::getPoint).collect(Collectors.toList());
         return transformation.transform(points);

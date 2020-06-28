@@ -1,8 +1,7 @@
 package server;
 
-import com.illposed.osc.*;
-import com.illposed.osc.transport.udp.OSCPort;
-import com.illposed.osc.transport.udp.OSCPortIn;
+import com.illposed.osc.OSCMessage;
+import com.illposed.osc.OSCSerializeException;
 import com.illposed.osc.transport.udp.OSCPortOut;
 import world.SoundSprite;
 import world.SoundSprites;
@@ -27,8 +26,11 @@ public class OscAdapterImpl implements OscAdapter {
         for (SoundSprite soundSprite : soundSprites) {
             OSCMessage msg = new OSCMessage(
                     "/sounds/" + soundSprite.getTypeId(),
-                    Arrays.asList(soundSprite.getVolume(),
-                            soundSprite.getPoint().x, soundSprite.getPoint().y, soundSprite.getPoint().z));
+                    Arrays.asList((float)soundSprite.getVolume(),
+                            (float)soundSprite.getPoint().x,
+                            //note in OSC it's a x-y  plane, but in Unity it's a x-z plane
+                            (float)soundSprite.getPoint().z,
+                            (float)soundSprite.getPoint().y));
 
             send(msg);
         }
@@ -41,9 +43,16 @@ public class OscAdapterImpl implements OscAdapter {
 
     @Override
     public void clearAll() {
-        for (int typeId : SoundSprites.Types.getAllAnimals()) {
-            OSCMessage msg = new OSCMessage("/sounds/" + typeId, Arrays.asList(0, 0, 0, 0));
-            send(msg);
+        // avoid udp lost
+        for (int i = 0; i < 10; i++) {
+            for (int typeId : SoundSprites.Types.getAllAnimals()) {
+                OSCMessage msg = new OSCMessage("/sounds/" + typeId, Arrays.asList(0, 0, 0, 0));
+                send(msg);
+            }
+            for (int typeId : SoundSprites.Types.getAllSurroundings()) {
+                OSCMessage msg = new OSCMessage("/sounds/" + typeId, Arrays.asList(0, 0, 0, 0));
+                send(msg);
+            }
         }
     }
 
@@ -55,10 +64,10 @@ public class OscAdapterImpl implements OscAdapter {
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
 //        new Thread(() -> {
 //            try {
-//                OSCPortIn in = new OSCPortIn(9000);
+//                OSCPortIn in = new OSCPortIn(9001);
 //                in.run();
 //                in.addPacketListener(new OSCPacketListener() {
 //                    @Override
@@ -68,7 +77,7 @@ public class OscAdapterImpl implements OscAdapter {
 //
 //                    @Override
 //                    public void handleBadData(OSCBadDataEvent oscBadDataEvent) {
-//
+//                        System.out.println(oscBadDataEvent);
 //                    }
 //                });
 //                in.startListening();
@@ -76,10 +85,9 @@ public class OscAdapterImpl implements OscAdapter {
 //                e.printStackTrace();
 //            }
 //        }).start();
-        while(true) {
-            OscAdapterImpl oscAdapter = new OscAdapterImpl("192.168.1.108", 9000);
+        OscAdapterImpl oscAdapter = new OscAdapterImpl("192.168.43.163", 9001);
+
             oscAdapter.send(new OSCMessage("/sounds/1",
-                    Arrays.asList(0.4, 0.1, 0.2, 0.3)));
-        }
+                    Arrays.asList()));
     }
 }

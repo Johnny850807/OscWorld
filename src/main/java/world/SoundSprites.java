@@ -2,7 +2,6 @@ package world;
 
 import world.behaviors.LinearVolumeBehavior;
 import world.behaviors.ProbablyVolumeWaveTriggerBehavior;
-import world.behaviors.ProbablyUpdateBehavior;
 import world.behaviors.SinVolumeBehavior;
 
 import java.util.HashMap;
@@ -26,7 +25,8 @@ public class SoundSprites {
         int TIGER = 8;
         int WOLF = 9;
 
-        int RIVER = 100;
+        int RIVER1 = 101;
+        int RIVER2 = 102;
 
 
         static int[] getAllAnimals() {
@@ -37,7 +37,7 @@ public class SoundSprites {
 
         static int[] getAllSurroundings() {
             return new int[]{
-                    RIVER
+                    RIVER1, RIVER2
             };
         }
     }
@@ -64,7 +64,8 @@ public class SoundSprites {
                 return "虎";
             case Types.WOLF:
                 return "狼";
-            case Types.RIVER:
+            case Types.RIVER1:
+            case Types.RIVER2:
                 return "河";
             default:
                 throw new IllegalArgumentException("No name of type=" + typeId + " found.");
@@ -75,28 +76,30 @@ public class SoundSprites {
 
     static {
         // animals
-        spriteMap.put(Types.CAT, new SoundSprite(Types.CAT, DEFAULT_VOLUME,
-                new ProbablyVolumeWaveTriggerBehavior(0.005, new LinearVolumeBehavior(0.004))));
-        spriteMap.put(Types.DOG, new SoundSprite(Types.DOG, DEFAULT_VOLUME,
-                new ProbablyVolumeWaveTriggerBehavior(0.0064, new LinearVolumeBehavior(0.01))));
-        spriteMap.put(Types.ELEPHANT, new SoundSprite(Types.ELEPHANT, 0.1,
-                new ProbablyVolumeWaveTriggerBehavior(0.00055, new SinVolumeBehavior(10))));
-        spriteMap.put(Types.GOAT, new SoundSprite(Types.GOAT, 0.2,
-                new ProbablyVolumeWaveTriggerBehavior(0.002032, new SinVolumeBehavior(4))));
-        spriteMap.put(Types.HORSE, new SoundSprite(Types.HORSE, 0.2,
-                new ProbablyVolumeWaveTriggerBehavior(0.00341, new SinVolumeBehavior(4))));
-        spriteMap.put(Types.LION, new SoundSprite(Types.LION, 0.1,
-                new ProbablyVolumeWaveTriggerBehavior(0.0009, new SinVolumeBehavior(6))));
-        spriteMap.put(Types.MOUSE, new SoundSprite(Types.MOUSE, DEFAULT_VOLUME,
-                new ProbablyVolumeWaveTriggerBehavior(0.0072, new LinearVolumeBehavior(0.02))));
-        spriteMap.put(Types.SPARROW, new SoundSprite(Types.SPARROW, DEFAULT_VOLUME,
-                new ProbablyVolumeWaveTriggerBehavior(0.006882, new LinearVolumeBehavior(0.02))));
-        spriteMap.put(Types.TIGER, new SoundSprite(Types.TIGER, 0.1,
-                new ProbablyVolumeWaveTriggerBehavior(0.00177, new SinVolumeBehavior(8))));
-        spriteMap.put(Types.WOLF, new SoundSprite(Types.WOLF, DEFAULT_VOLUME,
-                new ProbablyVolumeWaveTriggerBehavior(0.004, new LinearVolumeBehavior(0.009))));
-        spriteMap.put(Types.RIVER, new SoundSprite(Types.RIVER, DEFAULT_VOLUME,
+        spriteMap.put(Types.CAT, new SoundSprite(Types.CAT, 0,
+                new ProbablyVolumeWaveTriggerBehavior(0.5, new LinearVolumeBehavior(0.006))));
+        spriteMap.put(Types.DOG, new SoundSprite(Types.DOG, 0,
+                new ProbablyVolumeWaveTriggerBehavior(0.4, new LinearVolumeBehavior(0.007))));
+        spriteMap.put(Types.ELEPHANT, new SoundSprite(Types.ELEPHANT, 0,
+                new ProbablyVolumeWaveTriggerBehavior(0.24, new SinVolumeBehavior(10))));
+        spriteMap.put(Types.GOAT, new SoundSprite(Types.GOAT, 0,
+                new ProbablyVolumeWaveTriggerBehavior(0.3, new SinVolumeBehavior(4))));
+        spriteMap.put(Types.HORSE, new SoundSprite(Types.HORSE, 0,
+                new ProbablyVolumeWaveTriggerBehavior(0.366, new SinVolumeBehavior(4))));
+        spriteMap.put(Types.LION, new SoundSprite(Types.LION, 0,
+                new ProbablyVolumeWaveTriggerBehavior(0.23, new SinVolumeBehavior(6))));
+        spriteMap.put(Types.MOUSE, new SoundSprite(Types.MOUSE, 0,
+                new ProbablyVolumeWaveTriggerBehavior(0.69, new LinearVolumeBehavior(0.02))));
+        spriteMap.put(Types.SPARROW, new SoundSprite(Types.SPARROW, 0,
+                new ProbablyVolumeWaveTriggerBehavior(0.5, new LinearVolumeBehavior(0.02))));
+        spriteMap.put(Types.TIGER, new SoundSprite(Types.TIGER, 0,
+                new ProbablyVolumeWaveTriggerBehavior(0.42, new SinVolumeBehavior(8))));
+        spriteMap.put(Types.WOLF, new SoundSprite(Types.WOLF, 0,
+                new ProbablyVolumeWaveTriggerBehavior(0.3, new LinearVolumeBehavior(0.009))));
+        spriteMap.put(Types.RIVER1, new SoundSprite(Types.RIVER1, 0,
                 new SinVolumeBehavior(20)));
+        spriteMap.put(Types.RIVER2, new SoundSprite(Types.RIVER2, 0,
+                new SinVolumeBehavior(13)));
     }
 
     public static Sprite createSprite(int typeId) {

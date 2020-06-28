@@ -1,5 +1,9 @@
 package world;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import utils.ArrayUtils;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -7,9 +11,10 @@ import java.util.stream.Collectors;
  * @author - johnny850807@gmail.com (Waterball)
  */
 public class Game {
+    private Logger logger = LogManager.getLogger();
     private World world;
     private ViewportTransformer viewportTransformer = new ViewportTransformer();
-    private Collection<UpdateListener> updateListeners = Collections.synchronizedSet(new HashSet<>());
+    private Collection<GameListener> gameListeners = Collections.synchronizedSet(new HashSet<>());
     private boolean running;
 
     private static final Vector3[] INIT_POINT_CANDIDATES = {
@@ -27,8 +32,8 @@ public class Game {
             new Vector3(-3.06, 1.55, -11.43)
     };
 
-    public void addUpdateListener(UpdateListener listener) {
-        updateListeners.add(listener);
+    public void addGameListener(GameListener listener) {
+        gameListeners.add(listener);
     }
 
     public void initialize() {
@@ -37,19 +42,28 @@ public class Game {
 
     private void randomizeWorld() {
         world = new World();
-        Random random = new Random();
         int[] typeIds = SoundSprites.Types.getAllAnimals();
-        int targetId = typeIds[random.nextInt(typeIds.length)];
-        Sprite targetSprite = SoundSprites.createSprite(targetId);
-        targetSprite.setPoint(INIT_POINT_CANDIDATES[
-                random.nextInt(INIT_POINT_CANDIDATES.length)]);
-        world.addSprite(targetSprite);
+        List<Vector3> shuffledPoints = Arrays.asList(INIT_POINT_CANDIDATES);
+        int[] shuffledTypeIds = ArrayUtils.shuffle(typeIds);
+        Collections.shuffle(shuffledPoints);
+
+        for (int i = 0; i < 4; i++) {
+            int targetId = shuffledTypeIds[i];
+            Sprite targetSprite = SoundSprites.createSprite(targetId);
+            targetSprite.setPoint(shuffledPoints.get(i));
+            world.addSprite(targetSprite);
+        }
+
+        logger.info("Animals: " +
+                world.getSprites().stream()
+                .map(s -> SoundSprites.getName(s.getTypeId()))
+                .collect(Collectors.joining(", ")));
 
         // rivers
         world.addSprite(SoundSprites.createSprite(
-                SoundSprites.Types.RIVER, new Vector3(0, 0, 9.6)));
+                SoundSprites.Types.RIVER1, new Vector3(0, 0, 9.6)));
         world.addSprite(SoundSprites.createSprite(
-                SoundSprites.Types.RIVER, new Vector3(-12.1, 0, 29.3)));
+                SoundSprites.Types.RIVER2, new Vector3(-12.1, 0, 29.3)));
 
     }
 
@@ -61,9 +75,10 @@ public class Game {
                     Thread.sleep(16);
                     List<Sprite> viewSprites = viewportTransformer.transform(getSprites(), getPlayer());
                     getSprites().forEach(Sprite::update);
-                    updateListeners.forEach(l -> l.opUpdate(viewSprites));
+                    gameListeners.forEach(l -> l.opUpdate(viewSprites));
                 } catch (InterruptedException ignored) {}
             }
+            gameListeners.forEach(GameListener::onGameOver);
         }).start();
     }
 
@@ -95,8 +110,9 @@ public class Game {
         this.world = world;
     }
 
-    public interface UpdateListener {
+    public interface GameListener {
         void opUpdate(List<Sprite> viewSprites);
+        void onGameOver();
     }
 
 }

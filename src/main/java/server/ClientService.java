@@ -71,7 +71,14 @@ public class ClientService extends Thread implements Protocol.RequestHandler {
 
     private void initAndStartGame() {
         game = new Game();
-        game.addUpdateListener(this::onGameLoopUpdate);
+        game.addGameListener(new Game.GameListener() {
+            @Override
+            public void opUpdate(List<Sprite> viewSprites) {
+                onGameLoopUpdate(viewSprites);
+            }
+            @Override
+            public void onGameOver() { }
+        });
         game.initialize();
         try {
             protocol.writeInitializedSprites(bufferedOut, game.getSprites());

@@ -16,8 +16,9 @@ public class Vector3 implements Cloneable {
         this.z = z;
     }
 
-    public void translate(double x, double z) {
+    public void translate(double x, double y, double z) {
         this.x += x;
+        this.y += y;
         this.z += z;
     }
 

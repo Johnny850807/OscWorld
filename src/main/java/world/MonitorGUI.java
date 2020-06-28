@@ -23,7 +23,16 @@ public class MonitorGUI extends JFrame implements KeyListener {
         setFocusable(true);
         requestFocusInWindow();
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        game.addUpdateListener(panel::repaint);
+        game.addGameListener(new Game.GameListener() {
+            @Override
+            public void opUpdate(List<Sprite> viewSprites) {
+                panel.repaint(viewSprites);
+            }
+
+            @Override
+            public void onGameOver() {
+            }
+        });
         addKeyListener(this);
     }
 
@@ -35,16 +44,16 @@ public class MonitorGUI extends JFrame implements KeyListener {
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_UP:
-                game.getWorld().translatePlayerLocation(0, -2);
+                game.getWorld().translatePlayerLocation(0, 0,  2);
                 break;
             case KeyEvent.VK_DOWN:
-                game.getWorld().translatePlayerLocation(0, 2);
+                game.getWorld().translatePlayerLocation(0, 0,-2);
                 break;
             case KeyEvent.VK_LEFT:
-                game.getWorld().translatePlayerLocation(-2, 0);
+                game.getPlayer().setAngle(game.getPlayer().getAngle()+0.01);
                 break;
             case KeyEvent.VK_RIGHT:
-                game.getWorld().translatePlayerLocation(2, 0);
+                game.getPlayer().setAngle(game.getPlayer().getAngle()-0.01);
                 break;
         }
     }
@@ -79,7 +88,7 @@ public class MonitorGUI extends JFrame implements KeyListener {
 
                 int x = MinMax.minmax((int) sprite.getPoint().x, -45, 70, 0, 115);
                 int z = MinMax.minmax((int) sprite.getPoint().z, -40, 72, 0, 112);
-                g.drawString(SoundSprites.getName(sprite.getTypeId()), x*10, z*10);
+                g.drawString(SoundSprites.getName(sprite.getTypeId()), x*10, -z*10);
             }
         }
     }

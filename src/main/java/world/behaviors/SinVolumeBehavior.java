@@ -1,7 +1,5 @@
 package world.behaviors;
 
-import world.SoundSprite;
-
 /**
  * @author - johnny850807@gmail.com (Waterball)
  */

@@ -14,6 +14,7 @@ public class ProbablyVolumeWaveTriggerBehavior implements Sprite.Behavior {
     private double probability;
     private boolean triggering = false;
     private double startTriggerVolume;
+    private long latestCheckTime;
 
     public ProbablyVolumeWaveTriggerBehavior(double probability,
                                              WaveVolumeBehavior delegate) {
@@ -27,16 +28,22 @@ public class ProbablyVolumeWaveTriggerBehavior implements Sprite.Behavior {
             throw new IllegalStateException("Only supported SoundSprite.");
         }
         SoundSprite soundSprite = (SoundSprite) sprite;
+
         if (triggering) {
             delegate.onUpdate(soundSprite);
-            if (soundSprite.getVolume() <= startTriggerVolume) {
+            if (soundSprite.getVolume() <= 0.1) {
                 triggering = false;
                 startTriggerVolume = -1;
             }
-        } else if (random.nextInt(100) / 100.0 <= probability) {
-            triggering = true;
-            startTriggerVolume = soundSprite.getVolume();
-            delegate.startWave();
+        } else if (System.currentTimeMillis() - latestCheckTime >= 3000){
+            latestCheckTime = System.currentTimeMillis() +
+                    (random.nextInt(2000)) /*increase randomness*/;
+            double prob = random.nextDouble()*100;
+            if (prob <= probability*100) {
+                triggering = true;
+                startTriggerVolume = soundSprite.getVolume();
+                delegate.startWave();
+            }
         }
     }
 

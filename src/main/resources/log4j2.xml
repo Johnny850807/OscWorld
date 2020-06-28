@@ -19,6 +19,7 @@
             <AppenderRef ref="LogAsync"/>
         </Root>
 
+        <Logger name="world" level="info"/>
         <Logger name="server" level="info"/>
         <Logger name="server.protocol" level="debug"/>
         <Logger name="server.Server$TransformationProcessing" level="trace"/>

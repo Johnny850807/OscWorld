@@ -19,8 +19,8 @@ public class World {
         sprites.add(sprite);
     }
 
-    public void translatePlayerLocation(double x, double z) {
-        player.getPoint().translate(x, z);
+    public void translatePlayerLocation(double x, double y, double z) {
+        player.getPoint().translate(x, y, z);
     }
 
     public void updatePlayerLocation(Vector3 point, double angle) {
