@@ -47,17 +47,21 @@ public class OscAdapterImpl implements OscAdapter {
 
     @Override
     public void clearAll() {
-        for (int typeId : SoundSprites.Types.getAllAnimals()) {
-            OSCMessage msg = new OSCMessage("/sounds/" + typeId, Arrays.asList(0, 0, 0, 0));
-            send(msg);
-        }
-        for (int typeId : SoundSprites.Types.getAllSurroundings()) {
-            OSCMessage msg = new OSCMessage("/sounds/" + typeId, Arrays.asList(0, 0, 0, 0));
-            send(msg);
+        try {
+            for (int typeId : SoundSprites.Types.getAllAnimals()) {
+                OSCMessage msg = new OSCMessage("/sounds/" + typeId, Arrays.asList(0, 0, 0, 0));
+                send(msg);
+            }
+            for (int typeId : SoundSprites.Types.getAllSurroundings()) {
+                OSCMessage msg = new OSCMessage("/sounds/" + typeId, Arrays.asList(0, 0, 0, 0));
+                send(msg);
+            }
+        } catch (Exception err) {
+
         }
     }
 
-    private void send(OSCMessage message) {
+    private synchronized void send(OSCMessage message) {
         try {
             oscPortOut.send(message);
         } catch (IOException | OSCSerializeException e) {
