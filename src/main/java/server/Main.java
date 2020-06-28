@@ -9,7 +9,7 @@ import java.io.IOException;
  */
 public class Main {
     public static void main(String[] args) throws IOException {
-        String host = System.getenv("ocsHost");
+        String host = System.getenv("oscHost");
         Server server = new Server(new V1Protocol(),
                 new OscAdapterImpl(host == null ? "localhost" : host, 9001));
         server.start();

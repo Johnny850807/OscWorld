@@ -3,6 +3,8 @@ package server;
 import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCSerializeException;
 import com.illposed.osc.transport.udp.OSCPortOut;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import world.SoundSprite;
 import world.SoundSprites;
 
@@ -15,10 +17,12 @@ import java.util.List;
  * @author - johnny850807@gmail.com (Waterball)
  */
 public class OscAdapterImpl implements OscAdapter {
+    private final static Logger logger = LogManager.getLogger();
     private OSCPortOut oscPortOut;
 
     public OscAdapterImpl(String host, int port) throws IOException {
         oscPortOut = new OSCPortOut(InetAddress.getByName(host), port);
+        logger.info("OscHost config {}:{}", host, port);
     }
 
     @Override
@@ -26,11 +30,11 @@ public class OscAdapterImpl implements OscAdapter {
         for (SoundSprite soundSprite : soundSprites) {
             OSCMessage msg = new OSCMessage(
                     "/sounds/" + soundSprite.getTypeId(),
-                    Arrays.asList((float)soundSprite.getVolume(),
-                            (float)soundSprite.getPoint().x,
+                    Arrays.asList((float) soundSprite.getVolume(),
+                            (float) soundSprite.getPoint().x,
                             //note in OSC it's a x-y  plane, but in Unity it's a x-z plane
-                            (float)soundSprite.getPoint().z,
-                            (float)soundSprite.getPoint().y));
+                            (float) soundSprite.getPoint().z,
+                            (float) soundSprite.getPoint().y));
 
             send(msg);
         }
@@ -43,16 +47,13 @@ public class OscAdapterImpl implements OscAdapter {
 
     @Override
     public void clearAll() {
-        // avoid udp lost
-        for (int i = 0; i < 3; i++) {
-            for (int typeId : SoundSprites.Types.getAllAnimals()) {
-                OSCMessage msg = new OSCMessage("/sounds/" + typeId, Arrays.asList(0, 0, 0, 0));
-                send(msg);
-            }
-            for (int typeId : SoundSprites.Types.getAllSurroundings()) {
-                OSCMessage msg = new OSCMessage("/sounds/" + typeId, Arrays.asList(0, 0, 0, 0));
-                send(msg);
-            }
+        for (int typeId : SoundSprites.Types.getAllAnimals()) {
+            OSCMessage msg = new OSCMessage("/sounds/" + typeId, Arrays.asList(0, 0, 0, 0));
+            send(msg);
+        }
+        for (int typeId : SoundSprites.Types.getAllSurroundings()) {
+            OSCMessage msg = new OSCMessage("/sounds/" + typeId, Arrays.asList(0, 0, 0, 0));
+            send(msg);
         }
     }
 
@@ -87,7 +88,7 @@ public class OscAdapterImpl implements OscAdapter {
 //        }).start();
         OscAdapterImpl oscAdapter = new OscAdapterImpl("192.168.43.163", 9001);
 
-            oscAdapter.send(new OSCMessage("/sounds/1",
-                    Arrays.asList()));
+        oscAdapter.send(new OSCMessage("/sounds/1",
+                Arrays.asList()));
     }
 }
