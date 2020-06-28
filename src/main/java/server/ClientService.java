@@ -97,7 +97,9 @@ public class ClientService extends Thread implements Protocol.RequestHandler {
     private void cleanUpGame() {
         logger.traceEntry("Stopping...");
         oscAdapter.clearAll();
-        game.stop();
+        if (game != null) {
+            game.stop();
+        }
         game = null;
         System.gc();
         logger.traceExit("Stopped.");

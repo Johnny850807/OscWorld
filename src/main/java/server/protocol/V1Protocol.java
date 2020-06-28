@@ -25,7 +25,7 @@ public class V1Protocol implements Protocol {
 
     @Override
     public int getAnimalTypeCode(Sprite sprite) {
-        throw new IllegalArgumentException("Animal Type not exists for the class " + sprite.getClass() + ".");
+        return sprite.getTypeId();
     }
 
     @Override
