@@ -31,9 +31,7 @@ public class ViewportTransformer {
     }
 
     private List<Vector3> viewTransform(List<Sprite> sprites, Vector3 newPlayerPoint, double newAngle) {
-        Transformation transformation =
-                Rotation.zAxis(newAngle)
-                        .compose(new Translation(-newPlayerPoint.x, -newPlayerPoint.y, -newPlayerPoint.z));
+        Transformation transformation = new Translation(-newPlayerPoint.x, -newPlayerPoint.y, -newPlayerPoint.z);
 
         List<Vector3> points = sprites.stream().map(Sprite::getPoint).collect(Collectors.toList());
         return transformation.transform(points);

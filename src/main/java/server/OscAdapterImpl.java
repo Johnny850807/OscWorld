@@ -44,7 +44,7 @@ public class OscAdapterImpl implements OscAdapter {
     @Override
     public void clearAll() {
         // avoid udp lost
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 3; i++) {
             for (int typeId : SoundSprites.Types.getAllAnimals()) {
                 OSCMessage msg = new OSCMessage("/sounds/" + typeId, Arrays.asList(0, 0, 0, 0));
                 send(msg);
